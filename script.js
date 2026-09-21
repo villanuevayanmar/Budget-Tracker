@@ -1,143 +1,119 @@
-let currentUser = "";
-let userData = { income: 0, expense: 0 };
-let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-const categoryInput = document.getElementById('category');
-const descriptionInput = document.getElementById('description');
+const loginContainer = document.getElementById('login-container');
+const dashboardContainer = document.getElementById('dashboard-container');
+const usernameInput = document.getElementById('username');
+const loginBtn = document.getElementById('login-btn');
+const userDisplay = document.getElementById('user-display');
+
 const typeInput = document.getElementById('type');
+const descriptionInput = document.getElementById('description');
 const amountInput = document.getElementById('amount');
-const transactionList = document.getElementById('transaction-list');
+const addBtn = document.getElementById('add-btn');
 
-document.getElementById("btn-login").addEventListener("click", loginUser);
-document.getElementById("btn-save").addEventListener("click", addTransaction);
-document.getElementById("btn-logout").addEventListener("click", logout);
+const totalIncomeEl = document.getElementById('total-income');
+const totalExpensesEl = document.getElementById('total-expenses');
+const netBalanceEl = document.getElementById('net-balance');
+const incomeList = document.getElementById('income-list');
+const expenseList = document.getElementById('expense-list');
 
-document.getElementById('add-btn').addEventListener('click', () => {
+let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+let currentUser = localStorage.getItem('budgetUser') || '';
+
+if (currentUser) {
+    showDashboard(currentUser);
+}
+
+loginBtn.addEventListener('click', () => {
+    const username = usernameInput.value.trim();
+    if (username) {
+        localStorage.setItem('budgetUser', username);
+        showDashboard(username);
+    }
+});
+
+function showDashboard(name) {
+    currentUser = name;
+    userDisplay.textContent = name;
+    loginContainer.style.display = 'block';
+    loginContainer.classList.add('dashboard-active');
+    dashboardContainer.style.display = 'block';
+    renderTransactions();
+}
+
+addBtn.addEventListener('click', () => {
     const type = typeInput.value;
-    const category = categoryInput.value;
-    const description = descriptionInput.value.trim() || category; // Fallback to category if empty
+    const description = descriptionInput.value.trim() || (type === 'income' ? 'Income' : 'Expense');
     const amount = parseFloat(amountInput.value);
 
     if (isNaN(amount) || amount <= 0) {
-        alert('Please enter a valid amount.');
+        alert('Please enter a valid positive amount.');
         return;
     }
 
     const transaction = {
         id: Date.now(),
         type,
-        category,
         description,
         amount
     };
 
     transactions.push(transaction);
-    updateLocalStorage();
-    renderTransactions();
-    clearInputs();
+    saveAndRender();
+    
+    amountInput.value = '';
+    descriptionInput.value = '';
 });
-
-// Render Transactions to HTML
-function renderTransactions() {
-    transactionList.innerHTML = '';
-
-    transactions.forEach(t => {
-        const li = document.createElement('li');
-        li.classList.add(t.type); // "income" or "expense" for styling
-
-        const sign = t.type === 'income' ? '+' : '-';
-        
-        li.innerHTML = `
-            <span><strong>[${t.category}]</strong> ${t.description}</span>
-            <span>${sign}₱${t.amount.toFixed(2)}</span>
-            <button onclick="deleteTransaction(${t.id})">x</button>
-        `;
-
-        transactionList.appendChild(li);
-    });
-
-    updateTotals();
-}
 
 function deleteTransaction(id) {
     transactions = transactions.filter(t => t.id !== id);
-    updateLocalStorage();
+    saveAndRender();
+}
+
+function saveAndRender() {
+    localStorage.setItem('transactions', JSON.stringify(transactions));
     renderTransactions();
 }
 
-function updateLocalStorage() {
-    localStorage.setItem('transactions', JSON.stringify(transactions));
-}
+function renderTransactions() {
+    incomeList.innerHTML = '';
+    expenseList.innerHTML = '';
 
-function clearInputs() {
-    amountInput.value = '';
-    descriptionInput.value = '';
-}
+    let incomeTotal = 0;
+    let expenseTotal = 0;
 
-function loginUser() {
-    const nameInput = document.getElementById("user-name").value.trim();
-    if (!nameInput) {
-        alert("Please enter a valid name!");
-        return;
-    }
-    currentUser = nameInput.toLowerCase();
-    
-    const savedData = localStorage.getItem(`budget_${currentUser}`);
-    if (savedData) {
-        userData = JSON.parse(savedData);
-    } else {
-        userData = { income: 0, expense: 0 };
-        saveToStorage();
-    }
+    transactions.forEach(t => {
+        const li = document.createElement('li');
+        li.classList.add(t.type);
 
-    document.getElementById("display-name").innerText = nameInput;
-    document.getElementById("login-card").classList.add("hidden");
-    document.getElementById("dashboard-card").classList.remove("hidden");
-    updateUI();
-}
+        if (t.type === 'income') {
+            incomeTotal += t.amount;
+            li.innerHTML = `
+                <div>
+                    ${t.description}
+                </div>
+                <div>
+                    <span class="amount">+₱${t.amount.toFixed(2)}</span>
+                    <button class="delete-btn" onclick="deleteTransaction(${t.id})">×</button>
+                </div>
+            `;
+            incomeList.appendChild(li);
+        } else {
+            expenseTotal += t.amount;
+            li.innerHTML = `
+                <div>
+                    ${t.description}
+                </div>
+                <div>
+                    <span class="amount">-₱${t.amount.toFixed(2)}</span>
+                    <button class="delete-btn" onclick="deleteTransaction(${t.id})">×</button>
+                </div>
+            `;
+            expenseList.appendChild(li);
+        }
+    });
 
-function addTransaction() {
-    const type = document.getElementById("trans-type").value;
-    const amount = parseFloat(document.getElementById("trans-amount").value);
+    const netBalance = incomeTotal - expenseTotal;
 
-    if (isNaN(amount) || amount <= 0) {
-        alert("Please enter a valid amount greater than 0.");
-        return;
-    }
-
-    if (type === "income") {
-        userData.income += amount;
-    } else {
-        userData.expense += amount;
-    }
-
-    saveToStorage();
-    updateUI();
-    document.getElementById("trans-amount").value = ""; 
-}
-
-function updateUI() {
-    document.getElementById("total-income").innerText = `₱${userData.income.toFixed(2)}`;
-    document.getElementById("total-expense").innerText = `₱${userData.expense.toFixed(2)}`;
-    
-    const net = userData.income - userData.expense;
-    const netDiv = document.getElementById("net-balance");
-    netDiv.innerText = `Net Balance: ₱${net.toFixed(2)}`;
-    
-    if (net >= 0) {
-        netDiv.style.backgroundColor = "#e8f5e9";
-        netDiv.style.color = "#2e7d32";
-    } else {
-        netDiv.style.backgroundColor = "#ffebee";
-        netDiv.style.color = "#c62828";
-    }
-}
-
-function saveToStorage() {
-    localStorage.setItem(`budget_${currentUser}`, JSON.stringify(userData));
-}
-
-function logout() {
-    document.getElementById("user-name").value = "";
-    document.getElementById("login-card").classList.remove("hidden");
-    document.getElementById("dashboard-card").classList.add("hidden");
+    totalIncomeEl.textContent = `₱${incomeTotal.toFixed(2)}`;
+    totalExpensesEl.textContent = `₱${expenseTotal.toFixed(2)}`;
+    netBalanceEl.textContent = `Net Balance: ₱${netBalance.toFixed(2)}`;
 }
