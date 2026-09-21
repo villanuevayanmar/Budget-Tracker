@@ -3,55 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal Budget Tracker</title>
+    <title>Budget Tracker</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <div id="login-card" class="card">
+    <div id="login-container">
         <h2>Budget Tracker</h2>
         <p>Please enter your name to open your budget dashboard:</p>
-        <input type="text" id="user-name" placeholder="Your Name" required>
-        <button id="btn-login">Open Tracker</button>
+        <input type="text" id="username" placeholder="Your Name">
+        <button id="login-btn">Start</button>
     </div>
 
-    <div id="dashboard-card" class="card hidden">
-        <h2>Welcome, <span id="display-name"></span>!</h2>
+    <div id="dashboard-container" style="display: none;">
+        <h2>Welcome, <span id="user-display"></span>!</h2>
         
-        <div class="grid">
-            <div id="income-box" class="stat">Income<br><span id="total-income">₱0.00</span></div>
-            <div id="expense-box" class="stat">Expenses<br><span id="total-expense">₱0.00</span></div>
+        <div class="summary">
+            <div>Income<br><span id="total-income">₱0.00</span></div>
+            <div>Expenses<br><span id="total-expenses">₱0.00</span></div>
         </div>
-        <div id="net-balance" class="net-bal">Net Balance: ₱0.00</div>
+        <div id="net-balance">Net Balance: ₱0.00</div>
 
         <hr>
 
         <h3>Log Transaction</h3>
-        <select id="trans-type">
+        <select id="type">
             <option value="income">Income</option>
             <option value="expense">Expense</option>
         </select>
-        
-        <select id="category">
-            <option value="Food">Food</option>
-            <option value="Transport">Transport</option>
-            <option value="Bills">Bills / Utilities</option>
-            <option value="Entertainment">Entertainment</option>
-            <option value="Salary">Salary</option>
-             <option value="Allowance">Allowance</option>
-            <option value="Other">Other</option>
-        </select>
-        
-        <input type="text" id="description" placeholder="Description (e.g. Lunch, Groceries)">
 
+        <input type="text" id="description" placeholder="Description (e.g., Lunch, Groceries, Salary)">
         <input type="number" id="amount" placeholder="Amount (₱)">
         <button id="add-btn">Add Transaction</button>
-        
-        <h3>Transaction History</h3>
-        <ul id="transaction-list"></ul>
-        <input type="number" id="trans-amount" placeholder="Amount (₱)" min="0.01" step="0.01">
-        <button id="btn-save">Save Entry</button>
-        <button id="btn-logout">Switch User / Exit</button>
+
+        <div class="history-container">
+            <div class="history-column">
+                <h3>Income History</h3>
+                <ul id="income-list"></ul>
+            </div>
+            <div class="history-column">
+                <h3>Expense History</h3>
+                <ul id="expense-list"></ul>
+            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>
