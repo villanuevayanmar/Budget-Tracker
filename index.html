@@ -31,6 +31,24 @@
             <option value="income">Income</option>
             <option value="expense">Expense</option>
         </select>
+        
+        <select id="category">
+            <option value="Food">Food</option>
+            <option value="Transport">Transport</option>
+            <option value="Bills">Bills / Utilities</option>
+            <option value="Entertainment">Entertainment</option>
+            <option value="Salary">Salary</option>
+             <option value="Allowance">Allowance</option>
+            <option value="Other">Other</option>
+        </select>
+        
+        <input type="text" id="description" placeholder="Description (e.g. Lunch, Groceries)">
+
+        <input type="number" id="amount" placeholder="Amount (₱)">
+        <button id="add-btn">Add Transaction</button>
+        
+        <h3>Transaction History</h3>
+        <ul id="transaction-list"></ul>
         <input type="number" id="trans-amount" placeholder="Amount (₱)" min="0.01" step="0.01">
         <button id="btn-save">Save Entry</button>
         <button id="btn-logout">Switch User / Exit</button>
