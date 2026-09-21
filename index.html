@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Budget Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="login-card" class="card">
+        <h2>Budget Tracker</h2>
+        <p>Please enter your name to open your budget dashboard:</p>
+        <input type="text" id="user-name" placeholder="Your Name" required>
+        <button id="btn-login">Open Tracker</button>
+    </div>
+
+    <div id="dashboard-card" class="card hidden">
+        <h2>Welcome, <span id="display-name"></span>!</h2>
+        
+        <div class="grid">
+            <div id="income-box" class="stat">Income<br><span id="total-income">₱0.00</span></div>
+            <div id="expense-box" class="stat">Expenses<br><span id="total-expense">₱0.00</span></div>
+        </div>
+        <div id="net-balance" class="net-bal">Net Balance: ₱0.00</div>
+
+        <hr>
+
+        <h3>Log Transaction</h3>
+        <select id="trans-type">
+            <option value="income">Income</option>
+            <option value="expense">Expense</option>
+        </select>
+        <input type="number" id="trans-amount" placeholder="Amount (₱)" min="0.01" step="0.01">
+        <button id="btn-save">Save Entry</button>
+        <button id="btn-logout">Switch User / Exit</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
